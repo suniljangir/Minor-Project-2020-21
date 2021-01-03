@@ -1,0 +1,748 @@
+Code:
+import cv2
+import numpy as np
+cap=cv2.VideoCapture(0)
+word=[]
+value=[]
+while True:
+    ret,keyboard=cap.read()
+    keyboard=cv2.resize(keyboard,(1500,1000))
+    keyboard1=np.zeros((100,500,3),np.uint8)
+    h,w=100,100
+    th=3
+
+    q=[]
+    v=[]
+    dic={}
+    font_letter=cv2.FONT_HERSHEY_PLAIN
+
+    import string
+    a=string.ascii_uppercase[:26]
+    a=a.split()
+    for i in range(26):
+        v.append(a[0][i])
+
+    for a in range(0,1000,100):
+        q.append(a)
+
+    # To make keyboard outlines
+    y=-100
+    for j in range(3):
+        x=0
+        y+=100
+        for i in range(10):
+            cv2.rectangle(keyboard,(x+th,y+th),(x+w-th,y+h-th),(255,0,0),th)
+            x+=100
+
+
+    x=0
+    for i in range(6):
+        cv2.rectangle(keyboard,(x+th,300+th),(x+w-th,300+h-th),(255,0,0),th)
+        x+=100
+        cv2.putText(keyboard,v[i+20],(20+q[i],380),font_letter,5,(255,0,0),4)
+        dic[v[i+20]]=[20+q[i],380]
+    # to enter Text of Keyboard
+    for k in range(10):
+        font_letter=cv2.FONT_HERSHEY_PLAIN
+        cv2.putText(keyboard,str(k),(20+q[k],80),font_letter,5,(255,0,0),4)
+        dic[k]=[20+q[k],80]
+        cv2.putText(keyboard,v[k],(20+q[k],180),font_letter,5,(255,0,0),4)
+        dic[v[k]]=[20+q[k],180]
+        cv2.putText(keyboard,v[k+10],(20+q[k],280),font_letter,5,(255,0,0),4)
+        dic[v[k+10]]=[20+q[k],280]
+
+    op=["/","*","-","+",".",",","%","^","@"]
+
+    y=-100
+    for j in range(3):
+        y+=100
+        x=1050
+        for i in range(3):
+            cv2.rectangle(keyboard,(x+th,y+th),(x+w-th,y+h-th),(255,0,0),th)
+            x+=100
+
+    for i in range(3):
+        cv2.putText(keyboard,op[i],(1080+q[i],80),font_letter,5,(255,0,0),4) 
+        dic[op[i]]=[1080+q[i],80]
+        cv2.putText(keyboard,op[i+3],(1080+q[i],180),font_letter,5,(255,0,0),4) 
+        dic[op[i+3]]=[1080+q[i],180]
+        cv2.putText(keyboard,op[i+6],(1080+q[i],280),font_letter,5,(255,0,0),4) 
+        dic[op[i+6]]=[1080+q[i],280]
+
+    # to find key from values in a dictionary.
+
+    def getKeysByValue(dictOfElements, valueToFind):
+        listOfKeys = list()
+        listOfItems = dictOfElements.items()
+        for item  in listOfItems:
+            if item[1] == valueToFind:
+                listOfKeys.append(item[0])
+        return  listOfKeys
+    # to get the coordinates of mouse click.
+    def mouse_drawing(g,h):
+            
+            #print("Left Click")
+            #print(g,h)
+            for a,b in dic.values():
+                if (g>=a and g<=a+100) and (h>=b and h<=b+100):
+                    listOfKeys = getKeysByValue(dic, [a,b+100])
+                    keyboard1=np.zeros((1000,1200,3),np.uint8)
+                    
+                    for key  in listOfKeys:
+                        ad=key
+                            #print(key,end="")
+            return(ad)
+    hsv = cv2.cvtColor(keyboard, cv2.COLOR_BGR2HSV)
+
+    # define range of red color in HSV
+    lower_red = np.array([0, 120, 70])
+    uper_red   = np.array([10,255,255]) 
+    # Threshold the HSV image to get only red colors
+    mask = cv2.inRange(hsv, lower_red,uper_red)
+
+    # Bitwise-AND mask and original image
+    res = cv2.bitwise_and(keyboard,keyboard, mask= mask)
+    frame=cv2.flip(keyboard,1)
+    frame=cv2.resize(keyboard,(1300,700))
+    
+    points=cv2.findNonZero(mask)
+    
+    try:
+       # print("s")
+        if points[0][0][0]!=None:
+            #print("A")
+    
+            g=points[0][0][0]
+            #print(g)
+            h=points[0][0][1]
+            #print(h)
+            
+            a=mouse_drawing(g,h)
+        
+            try:
+                if a!=None:
+                    word.append(a)
+                    if len(word)==30:
+                        value.append(a)
+                        
+                        cv2.putText(keyboard1,a,(12,20),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),3)
+                        print(a,end="")
+            
+                        word=[]
+            except:
+                pass
+            
+    except:
+        pass
+
+    cv2.namedWindow("Keyboard")
+    cv2.imshow("key",keyboard1)
+    cv2.imshow("Keyboard",keyboard)
+    if cv2.waitKey(10) & 0xFF==27:
+        cv2.destroyAllWindows()
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+Report
+                                                         A
+Minor Project Report on
+
+“VIRTUAL KEYBOARD”
+
+In partial fulfillment of requirements for the degree of
+Bachelor of Technology (B. Tech.)
+in
+Computer Science and Engineering
+
+
+Submitted by
+Ms. Yukta Dadhich(170418)
+
+
+
+Under the Guidance of
+Dr. Sanjeev Patwa
+
+
+Computer Science and Engineering
+SCHOOL OF ENGINEERING AND TECHNOLOGY
+Mody University of Science and Technology Lakshmangarh, Distt. Sikar-332311
+
+December 2020
+
+
+
+  ACKNOWLEDGEMNT
+
+
+I would like to thank everyone who has helped in every possible way in successful completion of this project. Firstly, I would like to express my gratitude to my mentor Dr. Sanjeev Patwa (Associate Professor, Department of Computer Science and Engineering) who have provided me an opportunity to do this project under his guidance. He has provided valuable ideas and support during the course of this work. This work would not have been possible without his support. I would like to thank Dr. A. Senthil(Head of Department,Computer Science and Engineering) for providing valuable input through the course of this work.
+I would also like to thank my friends for their help in the completion of this project.
+
+
+
+
+
+
+
+                                                                                                                Yukta Dadhich
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                 
+                                                                  
+                                                   CERTIFICATE
+
+
+This is to certify that the minor project report entitled “Virtual Keyboard” submitted by Yukta Dadhich, as a partial fulfillment for the requirement of B. Tech. VII Semester examination of the School of Engineering and Technology, Mody University of Science and Technology, Lakshmangarh for the academic session 2020-2021 is an original project work carried out under the supervision and guidance of Mr. Sanjeev Patwa has undergone the requisite duration as prescribed by the institution for the project work.
+
+
+ PROJECT GUIDE:						HEAD OF DEPARTMENT
+ Approval Code:AUT_20_CSE_F10_80			Signature:
+ Name: Dr. Sanjeev Patwa  				            Name:Dr. A.Senthil
+ Date: 27th Dec’2020                                                              Date: 27th Dec’2020
+
+
+									
+
+EXAMINER-I:						EXAMINER-II
+Name:	Dr. Sunil Jangir					Name: Dr. Ajay Kumar Singh
+Dept : CSE					                        Dept : CSE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                       
+                                                        ABSTRACT
+ 
+
+Recent years have denoted a major increase inside the range of the path in which users can interact with PC’s. The keyboard and mouse are the primary interfaces for a pc, clients at present use touchscreens, infrared cameras. In relation of those progressions and furthermore the multiplication of minor cameras in PC’s and tablets, human pc interface analysts have examined the chance of executing a keyboard style interface using a camera as a substitute for genuine keyboard equipment.
+A camera watches the client's hands, that lay on a ﬂat surface. The camera may watch the hands from over the surface, or at partner degree point. The virtual keyboard's bundle investigations those photos in period to see the succession of keystrokes picked by the client.
+In a few nations (for instance, India), clients communicate in diﬀerent dialects, that makes fabricating physical keyboards for diﬀerent languages expensive. A camera-based console will help for this problem, Smart-phone clients may at times wish to utilize a full- sized console with their gadget, but are reluctant to hold a physical console. Since most cell phones are provided with a camera, a camera-based keyboard may be an alternate in order to avoid this drawback.
+The goal of this project was to actualize a virtual keyboard exploiting the picture inspection systems in order to create it for security purposes. We already have security lock systems present for domestic and commercial use. But the issue is that these systems are not secure enough as there can be breakage through key stroke logging, so in order to ensure more stealth and security we can replace the normal password typing keypads introduced in these systems by this virtual keyboard application which can be implemented using the regular security camera present in the security lock room, very less additions would be required to make the system work.
+Inside the framework we tend to authorize, one high-quality camera which catches RGB photos of a user's hands, that bit a freckled surface, or console
+                                                  
+tangle, in order to choose keystrokes and further using image processing
+techniques, these touch made by the user are monitored and output keystrokes are generated.
+
+
+
+
+
+
+               
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                              
+ 
+                                                         Table of Contents
+
+
+Sr.no.	
+Topics	
+Page no.
+
+1.	
+Introduction	
+   1.1
+   1.2	Present System                                                                                                                                                                                                                                             
+Proposed System                                                              
+	3
+3
+2.	Tools and Technology used	
+   2.1	Introduction	4
+   2.2
+   2.3	Image Processing Techniques                                        
+Algorithm	5
+8
+3.	Hardware and Software details	
+   3.1	Tools Used
+	10
+4.	Implementation Work Details	
+   4.1	-Working	12
+   4.2	-Real world Applications
+	13
+5.	Source Code	14
+6.	Output	24
+7.	System Testing	25
+8.
+   8.1
+   8.2 	Conclusion
+Limitations
+Scope for future work
+	26
+27
+9.
+
+10.	Bibliography
+
+Annexures
+
+
+	28
+
+29
+   		
+    		
+	
+	
+
+                             v	
+                                              
+ 
+                         Chapteri1i:iIntroductioni
+
+
+Virtualikeyboardiisioneiofitheiexamplesiofiinnovationiinitheifieldioficomputeritechnology.iTheseidaysicomputingiisinotionlyilimiteditoitheidesktopsibuticanialsoibeiseenioniourimobiles.iOneithingithatihasiremainediconstantisinceitheibeginningiisitheiinterfaceiofitheikeyboardii.e.iQWERTYikeyboard.iVirtualikeyboardiisitheinewiinnovationiinitheifieldioficomputeritechnology.
+Theivirtualikeyboardimakesiuseioficamera/webcamiandiimageiprocessingitechniquesithatiallowiuseritoiworkionianyiflatisurfaceiusingivirtualikeyboard.iVirtualikeyboardiallowsiusitoicreateiaikeyboardiinianyiofitheipreferredilanguageionialmostieveryiexistingiplatform.iTheipropertiesiofivirtualikeyboardibeingismalliandieasyitoiuseiapplicationimakesiitiaigoodisolutioniforitextiinputiacrossivariousidifferentiplatforms.
+
+iTheimostiimportantifeatureiofitheivirtualikeyboardiisithatiitiisiveryienvironmentalifriendly.iItirequiresilargeiamountsiofiresourcesitoiproduceiphysicalikeyboards.iWhenitheseiphysicali   keyboardsibecomeioldiorigetsibrokenitheyiareidiscardedibyiusersiandithusigenerateihugeiamountsiofiwaste,iwhichiisiaiburdenioniourienvironment.iiTheivirtualikeyboardicanibeimadeoniaiplainipaper,ioriiticanibeiaiprojectionikeyboardioniaideskioriailaserikeyboardioniaiwal.iThus,iiticanibeisaidithatitheiproposedivirtualikeyboardiwillinotileaditoianyienvironmentalipollution.
+
+Secondly,ianotheriadvantageiofitheivirtualikeyboardiisithatiusersiwillibeiableitoireplaceithisikeyboardibyithemselvesiwhenitheyiwantiainewione.iItiisisimpleiforianyoneitoiabandonitheipreviousivirtualikeyboardiandimakeiainewicustomizedione.
+
+Theiconceptiofiaivirtualikeyboardiisithatiitihasitheisameiinputiandioutputifunctionsiasiaitraditionalimechanicalioriphysicalikeyboardibutiitiisineitherimechanicalinorimaterial.iTheidifferentitechnologiesiwhichiareiusediareidigitaliimageiprocessing,ipatternirecognition,ifingerirecognition,iandi 
+                                                          1111
+
+tracking.iButirightinowithereiareiaivarietyiofichallengesithatineedsitoibeiovercomeiiniorderitoidevelopiairobustivirtualikeyboard.Theseichallengesiincludeivariousiconditionsisuchiasidifferentiskinitonesibetweeniusers,icomplexienvironments,iinconvenientiaddonidevices,ianditheilimitationsiofivariousialgorithms.
+
+Onicomparingiwithiexistingistudiesiofivariousiotherivirtualikeyboards,itheivirtualikeyboardiisivisibleiandiflexible.iUsersicanistillihaveitheifeelingiandiviewiofinormalityping.iOtheriadvantageiofithisikeyboardiisithatiusersicanireplaceitheivirtualikeyboardibyithemselvesiwhenitheyiwantiainewioneiforianyireason.iItiisieasyiforianyoneitoileaveitheipreviousipaperikeyboardiandiprintiainewicustomizedione.iForitheipaperikeyboard,iusersicanistickiitionianyiplaneisurface.
+
+1.1iPresentiSystem
+Aikeyboardirequiresiaiilotiofiresourcesiandiisirestrictedibyitheiphysicalifeatures
+thatiitihas.iAlso,idiscardedikeyboardsialsoinaturallyicontributeitoienvironmentalipollution.iConsequently,itheitouchiscreeniisidesigneditoireplaceitheioriginaliphysicalikeyboardiandithusifurtherireducesitheseiflaws.iHowever,itheiinternalidigitalikeyboardionitheitouchiscreenitakesiupiailargeiamountiofispace,iwhichialsoicausesisomeicontentitoibeicovered.iTheitouchiscreeniofisystemigetsidirtieribyitheitouchiofifingersiandibecomeiwornioveritime.iThatiisiwhyiitiisinecessaryitoidevelopiainewitypeiofienvironment-friendlyivirtualikeyboardiwithifeweriflaws.
+
+
+1.2iProposediSystem
+Asitheitechnologicaliadvancementsidevelops,inewihuman-PCiinterfacesiareiauthorizeditoisupplyivariousico-operationsiamongiclientsiandimachines.iInithisicase,iintroductioniforisomeihuman-to-PCicollaborationsiremainsitheioldiconsole/mouse.iWeiareitryingitoiexhibitihereiaicuttingiedgeiinnovation,ithatiwillibeithatitheiVirtualiKeyboard.iSinceitheinameitellsiitihasinoiphysicalilook.iVirtualikeyboardiisianiapplicationithativirtualizesiequipmenticonsoleiwithivariousidifferentiformatsialongitheseilines,iithatiallowsiuseritoimodifyitheidesigniaccordingitoitheiriapplication.iE.g.iuseriwillipickiaidifferentidialectiforiproofreaderioripickiaispecificiformatiforibadihabitiapplications.iUsericanievenistyleihis/heriveryiownidesigniiniequipmentivariant.
+Virtualikeyboardiisinothingibutioneimoreiadvancementiinifieldiofipersonalicomputeriinnova
+tion.iTheseidaysiregisteringiisinoticonstraineditoitheiworkiareasiyeticaniibeifoundiiniourimbiles.iOneithingithatihasinotichangedisinceitheistartiisitheiconsoleiinterfaceii.e.iQWERTYikeyboard.
+Theivirtualikeyboardiinnovationimakesiuseioficameraiandipictureihandlingi(imageiprocessing)iproceduresiallowingiclientsitoiuseiitiatianyilevelisurfaceiutilizingipapericonsole.iVirtualikeyboardiallowsiusitoimakeiaiconsoleiinianyiofitheifavoredidialectionialmostieveryicurrentistage.iTheipropertiesiofivirtualiconsoleibeingilittleiandisimpleitoiutilizeiapplicationimakesiitiaiansweriforicontenticontributionioverivariousistages.
+Virtualikeyboardiisibetterithaniphysicalikeyboardiasiphysicalikeyboardsiareiunitiexpansiveiandiserveilittleiorinoiimprovementiwhileivirtualikeyboardiareismalleriinisizeiandiareieasyitoiuse.iMainifeaturesiofitheivirtualikeyboardiare:isecurityilockisystemsiareitheiprimeiapplication,iitisupportsinumerousicontentidialects,iisismalliinisize,ieasyitoiuse. 
+                                Chapteri2:iSystemiDesign
+
+i
+2.1iIntroduction
+Asitheitechnologicaliadvancementsidevelop,inewihuman-PCiinterfacesiareiauthorizeditoisupplyivariousico-operationsiamongiclientsiandimachines.iInithisicase,iintroductioniforisomeihuman-to-PCicollaborationsiremainsitheioldiconsole/mouse.iWeiareitryingitoiexhibitihereiaicuttingiedgeiinnovation,ithatiwillibeithatitheiVirtualiKeyboard.iSinceitheinameitellsiitihasinoiphysicalilook.iVirtualikeyboardiisianiapplicationithativirtualizesiequipmenticonsoleiwithivariousidifferentiformatsialongitheseilinesithatiallowsiuseritoimodifyitheidesigniaccordingitoitheiriapplication.iE.g.iuseriwillipickiaidifferentidialectiforiproofreaderioripickiaispecificiformatiforibadihabitiapplications.iUsericanievenistyleihis/heriveryiownidesigniiniequipmentivariant.
+Virtualikeyboardiisinothingibutioneimoreiadvancementiinifieldiofipersonalicomputeriinnovation.iTheseidaysiregisteringiisinoticonstraineditoitheiworkiareasiyeticanibeifoundiiniourimobiles.iOneithingithatihasinotichangedisinceitheistartiisitheiconsoleiinterfaceii.e.iQWERTYikeyboard.
+Theivirtualikeyboardiinnovationimakesiuseioficameraiandipictureihandlingi(imageiprocessing)iproceduresiallowingiclientsitoiuseiitiatianyilevelisurfaceiutilizingipapericonsole.iVirtualikeyboardiallowsiusitoimakeiaiconsoleiinianyiofitheifavoredidialectionialmostieveryicurrentistage.iTheipropertiesiofivirtualiconsoleibeingilittleiandisimpleitoiutilizeiapplicationimakesiitiaiansweriforicontenticontributionioverivariousistages.
+Virtualikeyboardiisibetterithaniphysicalikeyboardiasiphysicalikeyboardsiareiunitiexpansiveiandiserveilittleiorinoiimprovementiwhileivirtualikeyboardiareismalleriinisizeiandiareieasyitoiuse.iMainifeaturesiofitheivirtualikeyboardiare:isecurityilockisystemsiisitheiprimeiapplicatin,iitisupportsinumerousicontentidialects,iisismalliinisize,ieasyitoiuse.
+
+2.2iImageiprocessingitechniques
+
+
+
+
+2.2.1iThreshold
+Thresholdiisiaimethoditoiconcentrateionlyionitheinecessaryiinformationiandiignoringitheiunnecessaryidetails.iItiisiainon-directiactivityithatichangesiaigrayiscaleipictureiintoiaibinaryipictureiwhereitheitwoidimensionsiareiassignedioutitoipixelsithatiareibeneathiorioveritheipredeterminedithresholdiesteem.
+Forithresholding,itypicallyiaimeani8-bitivalueiisitakenifromitheioriginaliimage.iNow,itheioriginaliimageiisidividediintoitwoiportions.iPixeliesteemsithatiareinotiexactlyioriequivalentitoitheiedge;ifoundation.iPixelsiesteemiisimoreiprominentithanitheiedge;ifrontaliarea.
+
+2.2.2iSegmentation
+Pictureisegmentationiisitheiwayitowardidividingiaicomputerizedipictureiintoinumerousisectionsi(setsiofipixels).iPictureisegmentationiisiordinarilyiuseditoifindiobjectsianditheirilimitsiinipictures.iAicompellingiwayitoidealiwithiperformingipictureidivisioniincorporatesiutilizingicalculations,iapparatuses,iandiaifarireachingiconditioniforiinformationiinvestigation,irepresentation,iandicalculationiadvancement.
+Theiobjectiveiofisegmentationiisitoiimproveiasiwelliasichangeitheiportrayaliofianiimageiintoisomethingithatiisiincreasinglyiimportantiandisimpleritoidissect.iTheiconsequenceiofipictureisegmentationiisiailotiofifragmentsithatiallithingsiconsideredispreaditheiwholeipicture,ioriailotiofishapesiremovedifromitheipicture.iEveryioneiofitheipixeliiniailocalesiareicomparableiasiforisomeitrademarkioriprocessediproperty,iforiexample,icolor,iintensity,ioritextureinearbyilocalesiareiallitogetheriextraiordinaryiasiforisimilaritrademark.
+
+2.2.3iImageiEnhancement
+Imageienhancementimeansienhancingiandiemphasizingianiimage’sifeaturesisuchiasiedges,icontrast,isharpnessiandisoion.iTherefore,ichangingitheidynamicirangesiofitheseifeatureiimprovesitheigraphicieffectiofitheiimageiandihelpiiniextractioniofiimportantiiinformationieasily.iiiiiiii
+
+Thereiareitwoimethodsiforienhancingianiimage:
+1)iSpatialidomainimethod:ispatialidomainirefersitoitheiplaneiofitheiimageiandiisibasedionidirectiprocessingiofitheiimageipixel.
+2)iFrequencyidomainimethod:iprocessingitechnologiesilikeiFourieritransform,iwaveletitransformiareibasedionimodifyingifrequenciesiofitransformediimages.
+
+Imageienhancementigenerallyistretchesitheigrayivalueirangeiofianiimageii.e.i0-255iwhichihelpsiiniboostingitheicontrastiofianiimageialongiwithiitsiquality.iTheiconceptiofiimageienhancementiisigenerallyibasedionihistogram.
+
+2.2.4iImageiBinarization
+ImageibinarizationiisitheiconversioniofiimageifromiRGBitoibinaryiimage.iItiplaysianiimportantiroleiinidigitaliimageiprocessingiasimostiofitheiimageiprocessingisystemsiareibasedionibinaryiimages.
+Firstly,itheiimageiwillibeitransformediintoigrayiscaleiimageithaniweiapplyithresholditoiit.iThisithresholdimightibeifixedioriadaptive.iAdaptiveiimageibinarizationiisirequirediwhereverianioptimalithresholdiisiselectediforitheiimage.
+iConversionioficolorediimagesitoigrayiscaleigenerallyiusesi3imethods.
+1)iMaximumimethod:
+iiiiTheiRGBivalueiofieachipixeliisiequalitoimaximumiofiitsiRGBivalues.
+i2)iAveragingimethod:
+iiiiiTheiRGBivalueiofieachipixeliisiequalitoiaverageiofiitsiRGBivalues.
+3)iWeightediaveragingimethod:
+iiiiiTheiRGBivalueiofieachipixeliisiequalitoiaverageiofitheiweightediRGBivaluesiofieveryipixel.
+
+ii2.2.5iImageiSmoothing
+Thereiareilotiofinoisesiwhichiareipresentiinianiimagei,iniorceritoimakeitismoothiweineeditoiremoveithem.iButiifiitiisinotidoneiproperlyitheniiticanievenimakeitimoreiblur.Soiweineeditoiuseiproperimethods.Iticouldibeidoneiinispatialiandifrequencyidomain:
+1)iMethodsiusediinisspatial:ineighborhoodiaveraging,imedianifiltering,imultipleiimagesiaveragingetc.
+2)iMethodsiusediiniifrequencyidomain:iidealilowipassifilter,ibutteriworthilowipassifilter.
+
+ii2.2.6iPre-iProcessing
+Theiimageiobtainedionitheicameraiisinotithaticlear.iToimakeicleariandiusableivariousifunctionsiareiappliedioniinputiimage.iIticanibeimadeibluriorisharpiaccordingly.iIticanialsoibeimadeibluriifiiitiisiveryisharpiorisharpiifiitiveryiblur.i
+
+2.2.7iSelectiveiRed,Green,Blue
+Dependingionitheicoloricomponentsi(Red,iGreeniandiBlueivalues)weifilteritheipixelsiofitheiimage.iThresholdiisidecidediiniprioriforithese.iTheirangeiisidecidedibasedionitheseipixels.
+
+i2.2.8i(Red,Green,Blue)itoi(Huei,Saturation,iValue)iConversion
+TheimodelistandsiHue,iSaturationiandivalue.iColoritypeiisipresentedibyihue.iSaturationitellsihowipureitheicoloriis.iIntensityiscaleirepresentsihowibrightitheicoloriis.
+i2.3iAlgorithm
+1)iAikeyboardiisicreatedionipuriscreensiiniblueicolor.Anditheimovementiofitheipeniisiseenithroughiwebcam.
+2)iVideoimadeiwhileitypingiisialsoicapturedithroughiwebcam.
+3)iMovementiofipeniwhileipressingidifferentikeysiisicapturediatiregulariintervalsibyicamera.
+4)iForiclearicapturingiweidoisomeipreprocessingioniimages.Forithisiweicanieitherimakeitheipictureisharpioriblur.i
+5)iAtitheienditheicharactersitypedibyitheiusericanibeiseeniatirealitime 
+i                Chapteri3:iHardwareiandiSoftwareiDetails
+
+3.1iToolsiUsed
+
+ 
+
+AnacondaiNavigatoriisiaiigraphicaliuseriinterfaceiwhichisincludediiniAnacondaidistributioniwhichiallowsiusitoilaunchiapplicationsiandieasilyimanagevariouscondaipackages,ienvironments,iandichannelsiwithoutiusingicommandlineicommands.iNavigator/UsericanisearchiforipackagesioniAnaconda.orgioriiniailocaliAnacondaiRepository.iItiisiavailableiforiWindows,imacOS,iandiLinux.
+Manyiscientificipackagesidependionispecificiversionsiofiotheripackages.iDataiscientistsiofteniuseimultipleiversionsiofimanyipackagesiandiuseimultipleienvironmentsitoiseparateitheseidifferentiversions.
+Theicommandlineiprogramicondaiisibothiaipackageimanageriandianienvironmentimanager helpsidataiscientistsiensureithatieachiversioniofieachipackageihasiallitheidependenciesiitirequiresiandworksicorrectly.
+.
+iVariousiapplicationsiareiavailableibyidefaultiiniNavigator:
+TheifollowingiapplicationsiareiavailableibyidefaultiiniNavigator:
+•	JupyterLab
+•	JupyteriNotebook
+•	Spyder
+•	PyCharm
+•	VSCode
+•	Glueviz
+•	Orangei3iApp
+•	RStudio
+•	AnacondaiPrompti(Windowsionly)
+•	AnacondaiPowerShelli(Windowsionly)
+
+AdvancedicondaiusersicanialsoibuilditheiriowniNavigatoriapplications.
+TheisimplestiwayiisiwithiSpyder.iFromitheiNavigatoriHomeitab,iclickiSpyder,iandiwriteiandiexecuteiyouricode.
+WeicanialsoiuseiJupyteriNotebooksitheisameiway.iJupyteriNotebooksiisibecomingipopularisystemiwhichicombinesiouricode,idescriptiveitext,ioutput,iimages,iiniaisingleinotebookifileiwhichiisiedited,iviewed,iandiusediiniaiwebibrowser.
+
+TheiJupyteriNotebook
+TheiJupyteriNotebookiisianiopen-sourceiwebiapplicationithatiallowsiusersitoicreateiandishareidocumentsithaticontainiliveicode,iequations,ivisualizationsiandinarrativeitext.iUsesiinclude:idataicleaningianditransformation,inumericalsimulation,istatisticalimodeling,idataivisualization,imachineilearning,iandimuchimore.
+
+
+
+
+
+
+
+
+
+
+
+              iChapteri4:iiImplementationiWorkiDetails
+
+
+4.1iWorking
+Theiwebcam/cameraioniourilaptopiwillicaptureitheiliveivideoifeedbackiofitheiuseriwithitheihelpiofitheikeyboardiandiitiwillipassithatifeedbackiinitheicodeianditheniitiwillipre-processitheipictureii.e.ieitheribluriorisharpeniitiaccordingitoitheineed.iTheniitiwilliapplyidifferentiprocessingistrategies,iforiexample,ithreshold,iandisegmentationiandiwilliproduceianioutput.
+Pythoniprogrammingilanguageiwillibeiusediforipreparingiphoto.iFurtheristepsilikeiconvertingiimageiintoibinaryiform,iapplyingiedgeidetectionialgorithmsiwillibeiappliedilater.
+
+Stepsifollowediduringiimageiprocessingiare:
+1)iDetectioniofiKeyboard:
+Coloridifferentiationiisiusediforitheidetectionioficorneripointsiofitheikeyboard.iTheiendpointsiareiblackiinicolor,itheseipointsicouldibeirecognizediasiweithresholditheigiveniimage.iThenitheivirtualikeyboard’silocationicanibeidetected.i
+2)iDetectioniofiHand:
+Initheibeginningiailargeicollectioniofihandipicturesiisibeingimade.iTheniaccordingitoitheiusersihandipicturesiofiareiobserved.iTheseiobservationsiareisameiforiallitheipicturesithatiweiverify.iThereiisinoieffectiofihandsiandiveinsionitheidetectionionihandsioripenionicamera.iButiweicanialsoiuseivariousitechniquesiforiimprovementiinidetection.iAtitheitheihandicomesiwhiteiandiremainingiparticomesiiniblack.
+4.2iApplications
+1)iIticanibeiusediforicomputerimachines:
+Theivirtualikeyboardiapplicationsicaniworkiininormalicomputer.iUsersicaniperformivariousioperationsilikeiwritingiofisomeidataiorienteringipasswordsiforiprivateidataibyiusingithisiapplication.Andiweidoinotineeditoiworryiaboutiproblemsilikeikeystoke.
+
+2)iIticanibeiusediiniautomateditransferimachines:
+Theiusericaniuseithisiapplicationiforienteringipasswordsiiniautomateditransferimachines.iForithisiweicaniuseitheicameraiwhichiisiinstallediinitheiroomiofitheimachineiandiuseriwillibeiableitoitypeinumbersiinirealitime.
+i3)iProtection
+Thisiapplicationiprotectsitheipasswordiofitheiusersifromivariousimalwareipractices.iItialsoimakesiouripasswordisafeiandiitiprotectsiitifromitheft.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                       Chapter 5: Source Code
+
+import cv2
+import numpy as np
+cap=cv2.VideoCapture(0)
+word=[]
+value=[]
+while True:
+    ret,keyboard=cap.read()
+    keyboard=cv2.resize(keyboard,(1500,1000))
+    keyboard1=np.zeros((100,500,3),np.uint8)
+    h,w=100,100
+    th=3
+
+    q=[]
+    v=[]
+    dic={}
+    font_letter=cv2.FONT_HERSHEY_PLAIN
+
+    import string
+    a=string.ascii_uppercase[:26]
+    a=a.split()
+    for i in range(26):
+        v.append(a[0][i])
+
+    for a in range(0,1000,100):
+        q.append(a)
+
+    # To make keyboard outlines
+    y=-100
+    for j in range(3):
+        x=0
+        y+=100
+        for i in range(10):
+            cv2.rectangle(keyboard,(x+th,y+th),(x+w-th,y+h-th),(255,0,0),th)
+            x+=100
+
+
+    x=0
+    for i in range(6):
+        cv2.rectangle(keyboard,(x+th,300+th),(x+w-th,300+h-th),(255,0,0),th)
+        x+=100
+        cv2.putText(keyboard,v[i+20],(20+q[i],380),font_letter,5,(255,0,0),4)
+        dic[v[i+20]]=[20+q[i],380]
+    # to enter Text of Keyboard
+    for k in range(10):
+        font_letter=cv2.FONT_HERSHEY_PLAIN
+        cv2.putText(keyboard,str(k),(20+q[k],80),font_letter,5,(255,0,0),4)
+        dic[k]=[20+q[k],80]
+        cv2.putText(keyboard,v[k],(20+q[k],180),font_letter,5,(255,0,0),4)
+        dic[v[k]]=[20+q[k],180]
+        cv2.putText(keyboard,v[k+10],(20+q[k],280),font_letter,5,(255,0,0),4)
+        dic[v[k+10]]=[20+q[k],280]
+
+    op=["/","*","-","+",".",",","%","^","@"]
+
+    y=-100
+    for j in range(3):
+        y+=100
+        x=1050
+        for i in range(3):
+            cv2.rectangle(keyboard,(x+th,y+th),(x+w-th,y+h-th),(255,0,0),th)
+            x+=100
+
+    for i in range(3):
+        cv2.putText(keyboard,op[i],(1080+q[i],80),font_letter,5,(255,0,0),4) 
+        dic[op[i]]=[1080+q[i],80]
+        cv2.putText(keyboard,op[i+3],(1080+q[i],180),font_letter,5,(255,0,0),4) 
+        dic[op[i+3]]=[1080+q[i],180]
+        cv2.putText(keyboard,op[i+6],(1080+q[i],280),font_letter,5,(255,0,0),4) 
+        dic[op[i+6]]=[1080+q[i],280]
+
+    # to find key from values in a dictionary.
+
+    def getKeysByValue(dictOfElements, valueToFind):
+        listOfKeys = list()
+        listOfItems = dictOfElements.items()
+        for item  in listOfItems:
+            if item[1] == valueToFind:
+                listOfKeys.append(item[0])
+        return  listOfKeys
+    # to get the coordinates of mouse click.
+    def mouse_drawing(g,h):
+            
+            #print("Left Click")
+            #print(g,h)
+            for a,b in dic.values():
+                if (g>=a and g<=a+100) and (h>=b and h<=b+100):
+                    listOfKeys = getKeysByValue(dic, [a,b+100])
+                    keyboard1=np.zeros((1000,1200,3),np.uint8)
+                    
+                    for key  in listOfKeys:
+                        ad=key
+                            #print(key,end="")
+            return(ad)
+    hsv = cv2.cvtColor(keyboard, cv2.COLOR_BGR2HSV)
+
+    # define range of red color in HSV
+    lower_red = np.array([0, 120, 70])
+    uper_red   = np.array([10,255,255]) 
+    # Threshold the HSV image to get only red colors
+    mask = cv2.inRange(hsv, lower_red,uper_red)
+
+    # Bitwise-AND mask and original image
+    res = cv2.bitwise_and(keyboard,keyboard, mask= mask)
+    frame=cv2.flip(keyboard,1)
+    frame=cv2.resize(keyboard,(1300,700))
+    
+    points=cv2.findNonZero(mask)
+    
+    try:
+       # print("s")
+        if points[0][0][0]!=None:
+            #print("A")
+    
+            g=points[0][0][0]
+            #print(g)
+            h=points[0][0][1]
+            #print(h)
+            
+            a=mouse_drawing(g,h)
+        
+            try:
+                if a!=None:
+                    word.append(a)
+                    if len(word)==30:
+                        value.append(a)
+                        
+                        cv2.putText(keyboard1,a,(12,20),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),3)
+                        print(a,end="")
+            
+                        word=[]
+            except:
+                pass
+            
+    except:
+        pass
+
+    cv2.namedWindow("Keyboard")
+    cv2.imshow("key",keyboard1)
+    cv2.imshow("Keyboard",keyboard)
+    if cv2.waitKey(10) & 0xFF==27:
+        cv2.destroyAllWindows()
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+
+
+
+
+
+
+ 
+                                  Chapter 6: Outputs              
+
+
+           
+ 
+
+
+
+
+ 
+                        Chapteri7:iSystemiTesting
+
+
+Inithisiproject,ikeyboardilayouticanibeiseenionitheicameraiwindowiiniblueicolor.
+
+Theiimagesiareipreprocessedibeforeitheiwebcamigetsistartediandiitieitherisharpensitheiimageioriblursiitiaccordingly.
+
+Thanitheipeniusedibyitheiiiuseriareidetectediasisooniasithereiisiaicontactimadeiwithianyiofitheicharactersiinitheikeyboard.
+
+Aiblinkiisimadeieveryitimeiweiclickionianyikeyiofitheikeyboardionianotheriwindowiandithenitheikeysipressedibyitheiuseriareiobtainediasitheioutput.
+
+
+
+ 
+iiiiiiiiiiiiiiiiiiiiiiiiiiChapteri8:iConclusion
+
+
+Soiiticanibeiconcludedithatitheivirtualikeyboardiapplicationiisinoti100%iefficientiasithereimightibeisomeierrorsioccurringidueitoilowimarginsibetweenidifferenticharactersibecauseiofiwhichimoreithanioneioriaidifferenticharactericanigetityped.
+Weiareiableitoiaccessitheikeyboardiofiblueicoloriusingicameraioniouriscreen.iAlsoiweiareiableitoilocateitheifingertipipositioniinitheipaperikeyboardiandiwhetheritheitouchihasibeenimadeiorinotianditheioutputiisigeneratediaccordingly.
+Thisireportiprincipallyishowsitheipracticaliexecutioniofitheivirtualikeyboardithatishowsitheifutureigenerationiofihumanimobileidevicesiasiwelliasitheihumanicomputeriinteractioniinitheicreationiofivirtualiworld.iWeiareiawareithatitheimobileidevicesiareimoreiinidemandinow,iwhichirequiresianieasyisystemiforityping.iTheipropertiesisuchiasilightnessiandiflexibilityiofitheikeyboardiareimoreisuitableiforisuchidevices.iItiprovidesiusersitheiabilityitoicompressitheidata.iUsersicanichangeitheikeyboardiaccordingitoihis/herineedsiwhichiwouldirequireiveryilittleichangesiinitheiprogram.iIticanibeiconcludedithativirtualikeyboardiapplicationiwouldimakeitypingimoreieasier,isecureiandireliableiforitheiuser.
+
+8.1iFutureiScope
+
+Forifutureiworkiweiwillifocusioniimprovingitheiperformanceiofithisivirtualikeyboard.iTheiifutureiimprovementsiareiasifollows:i1)itheivirtualikeyboardicaniworkiinirealitime,iwhichimeansithisivirtualikeyboardicanibeitakeniinipractice;i2)iiticouldialsoiidentifyitwoidifferentihandsitypingisimultaneouslyisoithatiitiicanigetiiutilizediiniicomputers;i3)iiticanialsoiworkiinidifferentiibackgroundsioridimilightienvironments;i4)iotherifunctionikeysisuchiasienter,idelete,ispace,ishift,ietc.,icanibeiaddedionitheivirtualikeyboard;i5)theidifferenceiiniparticipantsishouldibeiconsiderediinitheifuture.Toiigetimoreiefficiencyipeopleiofialliagesicanibeicalled.iMoreiandimoreipeopleicanibeiinviteditoitakeipartiinitheiexperiments,iwhichiwilligiveimoreiadviceiandifeedback.
+Iniaddition,iifisomeiotherimachineilearningitechnologiesilikeik-mapineuralinetwork,iartificialineuralinetworkicanibeiusediinithisivirtualikeyboard,itheirecognitioniperformanceimightigetiimproved.iItiisibelievedithatiartificialineuralinetworksiofferisignificantiadvantagesiforidynamicigestureirecognitioniandicharacterirecognition.
+3idimensionaliprojectionitechnologiesimightigetiknowniandicheaperiasicompareditoiothers.iAtithatitime,itheivirtualikeyboardicanicombineiwithi3idimensionaliprojectionitechnologiesitoiprojectiaiivirtualikeyboard.
+8.2iLimitations
+1)iKeyisizeicreatesierror:i
+Asitheikeyisizesiareiconstrainedialsoiailittleimarginibetweenitheitwoikeysiareipresentiso,ithereiisiaiichanceithatiaiuserimayiaccidentallyitouchitwoikeysiatiitheisameitimeioritheiadjacentikeyimightigetitouchediwhichicanichangeiitheioutput.iAlsoiitileadsitoislowitypingispeed.
+
+2)iPredeterminedinumberiofikeys:
+Asitheivirtualikeyboardiisisoftwareibasediapplicationiandihasiveryipreciseikeyilayoutiwhichiisialreadyiknownitoitheiprogramisoiaddingianyimoreisymbolioriaicharacteriwillirequireitheiprogramitoibeichangediaccordinglyitheilayout.
+
+3)iSoftwareisoianiupdateicanibreakiit:
+Asivirtualikeyboardiisisoftwareibasediapplicationiso,ianyivirusiorimalwareimaterialiwithinitheisystemicaniseriouslyidamageitheiapplication. 
+                                   Chapter 9: Bibliography
+
+
+
+1.		Kölsch, M. and Turk, M. “Keyboards without Keyboards: Survey of Virtual Keyboards”, Workshop on Sensing 0.and for Media-centric Systems, Santa  Barbara, CA, June 20-21, 2002.
+
+2.	H. Du, T. Oggier, F. Lustenberger and E. Charbon, “A virtual keyboard based on true3D optical ranging,” Proc. British Machine Vision Conference (BMVC), Oxford, pp. 220-229, Sept. 2005.
+
+
+3.	Matsui, N. & Yamamoto, Y. A New Input Method of Computers with One CCD Camera: Virtual Keyboard. Keio University, 2000.
+
+                                 
+1.	Wijewantha N. S.,” Vista Key: A Keyboard Without A Keyboard – A Type Of Virtual Keyboard,” Final year project hesis, Informatics Institute of Technology, Wellawatta, Sri Lanka, April 2004.
+
+2.	Adajania, Y., Gosalia, J., Kanade, A., Mehta, H. and Shekokar, N., 2010, November. Virtual keyboard using shadow analysis. In Emerging Trends in Engineering and Technology (ICETET), 2010 3rd International Conference on (pp. 163-165). IEEE.
+
+
+3.	Yin, Y., Li, Q., Xie, L., Yi, S., Novak, E. and Lu, S., 2018. CamK: Camera-Based Keystroke Detection and Localization for Small Mobile Devices. IEEE Transactions on Mobile Computing, 17(10), pp.2236-2251 
+                            Chapter 10 : Annexures                                             
+
+
+ 
